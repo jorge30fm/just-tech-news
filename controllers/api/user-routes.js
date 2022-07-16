@@ -53,6 +53,7 @@ router.get("/:id", (req, res) => {
 		});
 });
 
+<<<<<<< HEAD:routes/api/user-routes.js
 router.post("/", (req, res) => {
 	// expects {username: 'Lernantino', email: 'lernantino@gmail.com', password: 'password1234'}
 	User.create({
@@ -65,6 +66,28 @@ router.post("/", (req, res) => {
 			console.log(err);
 			res.status(500).json(err);
 		});
+=======
+router.post('/', (req, res) => {
+  // expects {username: 'Lernantino', email: 'lernantino@gmail.com', password: 'password1234'}
+  User.create({
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password
+  })
+    .then(dbUserData => {
+      req.session.save(() => {
+        req.session.user_id = dbUserData.id;
+        req.session.username = dbUserData.username;
+        req.session.loggedIn = true;
+  
+        res.json(dbUserData);
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+>>>>>>> develop:controllers/api/user-routes.js
 });
 
 router.post("/login", (req, res) => {
@@ -86,6 +109,7 @@ router.post("/login", (req, res) => {
 			return;
 		}
 
+<<<<<<< HEAD:routes/api/user-routes.js
 		res.json({ user: dbUserData, message: "You are now logged in!" });
 	});
 });
@@ -111,6 +135,50 @@ router.put("/:id", (req, res) => {
 			console.log(err);
 			res.status(500).json(err);
 		});
+=======
+    req.session.save(() => {
+      req.session.user_id = dbUserData.id;
+      req.session.username = dbUserData.username;
+      req.session.loggedIn = true;
+  
+      res.json({ user: dbUserData, message: 'You are now logged in!' });
+    });
+  });
+});
+
+router.post('/logout', (req, res) => {
+  if (req.session.loggedIn) {
+    req.session.destroy(() => {
+      res.status(204).end();
+    });
+  }
+  else {
+    res.status(404).end();
+  }
+});
+
+router.put('/:id', (req, res) => {
+  // expects {username: 'Lernantino', email: 'lernantino@gmail.com', password: 'password1234'}
+
+  // pass in req.body instead to only update what's passed through
+  User.update(req.body, {
+    individualHooks: true,
+    where: {
+      id: req.params.id
+    }
+  })
+    .then(dbUserData => {
+      if (!dbUserData) {
+        res.status(404).json({ message: 'No user found with this id' });
+        return;
+      }
+      res.json(dbUserData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+>>>>>>> develop:controllers/api/user-routes.js
 });
 
 router.delete("/:id", (req, res) => {
